@@ -502,9 +502,11 @@ section {
   margin: auto;
   letter-spacing: 0.2vw;
   line-height: 1.5;
+  
 }
 .portfolio__categories a:hover {
   z-index: 1;
+  transition-timing-function: ease;
 }
 .portfolio__image--l,
 .portfolio__image--s  {

@@ -1,7 +1,11 @@
 gsap.registerPlugin(ScrollTrigger);
 
 const sections = document.querySelectorAll('.rg__column')
+
+/*PORTFOLIO VARS*/
 const links = gsap.utils.toArray('.portfolio__categories a')
+const largeImage = document.querySelector('.portfolio__image--l')
+const smallImage = document.querySelector('.portfolio__image--s')
 
 
 function initNavigation() {
@@ -209,35 +213,58 @@ function initportfolioHover() {
     links.forEach(link => {
         link.addEventListener('mouseenter', createPortfolioHover)
         link.addEventListener('mouseleave', createPortfolioHover)
+        link.addEventListener('mousemove', createPortfolioMove)
     })
 }
 
 function createPortfolioHover(e) {
     const pageBackground = document.querySelector('.fill-background')
-    const largeImage = document.querySelector('.portfolio__image--l')
-    const smallImage = document.querySelector('.portfolio__image--s')
     const sInside = document.querySelector('.portfolio__image--s .image_inside')
     const lInside = document.querySelector('.portfolio__image--l .image_inside')
 
- 
+    const tl = gsap.timeline()
+
     if (e.type === 'mouseenter') {
         const {color,imagelarge,imagesmall } = e.target.dataset
         const allSiblings = links.filter(item=>item != e.target)
-        console.log(e.target)
 
-        const tl = gsap.timeline()
+        
         tl
-        .set(lInside, { backgroudImage: `url("${imagelarge}")` })
-        .set(sInside, {backgroudImage: `url("${imagesmall}")` })
-        .to([largeImage, smallImage], { duration: 1, autoAlpha: 1})
-        .to(allSiblings, {color:'fff', autoAlpha:0.2})
-        .to(e.target, {color:'white', autoAlpha:1}, 0)
-        .to(pageBackground, {duration: 0, backgroundColor:color, ease:'none'}, 0)
+        .set(lInside, {css:{backgroundImage: `url(${imagelarge})` }})
+        .set(sInside, {css:{backgroundImage: `url(${imagesmall})` }})
+        .to([largeImage, smallImage], { autoAlpha: 1})
+        .to(allSiblings, {color:'fff', autoAlpha:0.2}, 0)
+        .to(e.target, {color:'white', autoAlpha:1, ease: 'slow(0.7, 0.7, false)'}, 0)
+        .to(pageBackground, { backgroundColor:color, ease:'none'}, 0)
     } else if (e.type === 'mouseleave') {
-        //lol
+        tl
+        .to([largeImage, smallImage], { autoAlpha: 0})
+        .to(links, {color:'#000', autoAlpha:1}, 0)
+        .to(pageBackground, { backgroundColor:'#ACB7AB', ease:'none'}, 0)
     }
 }
 
+function createPortfolioMove(e){
+
+    const {clientY} = e
+
+    gsap.to(largeImage, {
+        duration:1.2, 
+        y:getPortfolioOffset(clientY)/6,
+        ease:'Power3.Out'
+    })
+
+    gsap.to(smallImage, {
+        duration:1.5, 
+        y:-getPortfolioOffset(clientY)/3,
+        ease:'Power3.Out'
+    })
+
+}
+function getPortfolioOffset(clientY){
+    return -(document.querySelector('.portfolio__categories').clientHeight - clientY)
+
+}
 
 
 function init() {
