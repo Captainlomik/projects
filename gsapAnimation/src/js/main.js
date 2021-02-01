@@ -1,4 +1,4 @@
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const sections = document.querySelectorAll('.rg__column')
 
@@ -7,9 +7,10 @@ const links = gsap.utils.toArray('.portfolio__categories a')
 const largeImage = document.querySelector('.portfolio__image--l')
 const smallImage = document.querySelector('.portfolio__image--s')
 
+/* PARALLAX BLOG */
+//const blogImage = document.querySelector('.blog__image img')
 
 function initNavigation() {
-    console.log()
     const mainNavLinks = gsap.utils.toArray('.main-nav a')
     const mainNavLinksRev = gsap.utils.toArray('.main-nav a').reverse()
 
@@ -23,7 +24,6 @@ function initNavigation() {
     })
 
     function navAnimation(direction) {
-        console.log(direction)
         const scrollingdown = direction === 1
         const links = scrollingdown ? mainNavLinks : mainNavLinksRev
         return gsap.to(links, {
@@ -225,47 +225,155 @@ function createPortfolioHover(e) {
     const tl = gsap.timeline()
 
     if (e.type === 'mouseenter') {
-        const {color,imagelarge,imagesmall } = e.target.dataset
-        const allSiblings = links.filter(item=>item != e.target)
+        const {
+            color,
+            imagelarge,
+            imagesmall
+        } = e.target.dataset
+        const allSiblings = links.filter(item => item != e.target)
 
-        
+
         tl
-        .set(lInside, {css:{backgroundImage: `url(${imagelarge})` }})
-        .set(sInside, {css:{backgroundImage: `url(${imagesmall})` }})
-        .to([largeImage, smallImage], { autoAlpha: 1})
-        .to(allSiblings, {color:'fff', autoAlpha:0.2}, 0)
-        .to(e.target, {color:'white', autoAlpha:1, ease: 'slow(0.7, 0.7, false)'}, 0)
-        .to(pageBackground, { backgroundColor:color, ease:'none'}, 0)
+            .set(lInside, {
+                css: {
+                    backgroundImage: `url(${imagelarge})`
+                }
+            })
+            .set(sInside, {
+                css: {
+                    backgroundImage: `url(${imagesmall})`
+                }
+            })
+            .to([largeImage, smallImage], {
+                autoAlpha: 1
+            })
+            .to(allSiblings, {
+                color: 'fff',
+                autoAlpha: 0.2
+            }, 0)
+            .to(e.target, {
+                color: 'white',
+                autoAlpha: 1,
+                ease: 'slow(0.7, 0.7, false)'
+            }, 0)
+            .to(pageBackground, {
+                backgroundColor: color,
+                ease: 'none'
+            }, 0)
     } else if (e.type === 'mouseleave') {
         tl
-        .to([largeImage, smallImage], { autoAlpha: 0})
-        .to(links, {color:'#000', autoAlpha:1}, 0)
-        .to(pageBackground, { backgroundColor:'#ACB7AB', ease:'none'}, 0)
+            .to([largeImage, smallImage], {
+                autoAlpha: 0
+            })
+            .to(links, {
+                color: '#000',
+                autoAlpha: 1
+            }, 0)
+            .to(pageBackground, {
+                backgroundColor: '#ACB7AB',
+                ease: 'none'
+            }, 0)
     }
 }
 
-function createPortfolioMove(e){
+function createPortfolioMove(e) {
 
-    const {clientY} = e
+    const {
+        clientY
+    } = e
 
     gsap.to(largeImage, {
-        duration:1.2, 
-        y:getPortfolioOffset(clientY)/6,
-        ease:'Power3.Out'
+        duration: 1.2,
+        y: getPortfolioOffset(clientY) / 6,
+        ease: 'Power3.Out'
     })
 
     gsap.to(smallImage, {
-        duration:1.5, 
-        y:-getPortfolioOffset(clientY)/3,
-        ease:'Power3.Out'
+        duration: 1.5,
+        y: -getPortfolioOffset(clientY) / 3,
+        ease: 'Power3.Out'
     })
 
 }
-function getPortfolioOffset(clientY){
+
+function getPortfolioOffset(clientY) {
     return -(document.querySelector('.portfolio__categories').clientHeight - clientY)
 
 }
 
+function parallaxSection() {
+
+    const blogSection = document.querySelectorAll('.with-parallax')
+
+    blogSection.forEach(section => {
+        const image = section.querySelector('img')
+
+        gsap.to(image, {
+            yPercent: 20,
+            ease: 'none',
+            scrollTrigger: {
+                trigger: section,
+                start: 'top bottom',
+                scrub: true
+            }
+        })
+
+    })
+
+
+
+}
+
+function initPinSteps() {
+
+    ScrollTrigger.create({
+        trigger: '.fixed-nav',
+        start: 'top center',
+        endTrigger: '#stage4',
+        end: '70% center',
+        pin: true,
+    })
+
+    const getVh =()=>{
+        const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0)
+        return vh
+    }
+
+    const updateBodyColor = (color)=>{
+       // gsap.to('.fill-background', {backgroundColor:color, ease:'none'})
+       document.documentElement.style.setProperty('--bcg-fill-color', color)
+    }
+
+    gsap.utils.toArray('.stage').forEach((stage, index)=>{
+        const navLinks = gsap.utils.toArray('.fixed-nav li')
+
+
+        ScrollTrigger.create({
+            trigger:stage, 
+            start: 'top center', 
+            end: ()=> `+=${stage.clientHeight + getVh()/10}`,
+            toggleClass:{
+                targets:navLinks[index],
+                className:'is-active',
+            }, 
+            onEnter:()=>updateBodyColor(stage.dataset.color),
+            onEnterBack:()=>updateBodyColor(stage.dataset.color)
+        })
+    })
+
+}
+
+function initScrollTo(){
+
+    gsap.utils.toArray('.fixed-nav a').forEach(link=>{
+
+        const target = link.getAttribute('href')
+        link.addEventListener('click', (e)=>{
+            e.preventDefault()
+            gsap.to(window, {duration:1.5, scrollTo: target, ease:'Power2.out'})
+        })
+    })
+}
 
 function init() {
     // start here
@@ -274,6 +382,9 @@ function init() {
     //initHoverReveal()
     handleWidthChange(mq)
     initportfolioHover()
+    parallaxSection()
+    initPinSteps()
+    initScrollTo()
 }
 
 window.addEventListener('load', function () {
