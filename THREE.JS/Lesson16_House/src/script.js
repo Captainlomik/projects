@@ -176,7 +176,7 @@ const floor = new THREE.Mesh(
     new THREE.PlaneBufferGeometry(20, 20),
     new THREE.MeshStandardMaterial({
         map: grassColor,
-        roughnessMap: grassRoughness,
+       // roughnessMap: grassRoughness,
         normalMap: grassNormal,
         aoMap: grassAmbientOcclusion,
     })
