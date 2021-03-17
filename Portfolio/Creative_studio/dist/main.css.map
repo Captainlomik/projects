@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://creative-studio/./src/style/main.scss"],"names":[],"mappings":"AAAA,KACI,yB","file":"main.css","sourcesContent":["body{\r\n    background-color: rgb(96, 184, 74);\r\n}"],"sourceRoot":""}
