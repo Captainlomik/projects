@@ -48,7 +48,13 @@
              {
                  test: /\.(png|jpe?g|gif|svg)$/i,
                  type: "asset"
-             }
+             },
+             //glsl
+            {
+                test:/\.(glsl|vs|fs|vert|frag)$/,
+                exclude:/node_module/,
+                use:['raw-loader']
+            }
          ]
 
      },

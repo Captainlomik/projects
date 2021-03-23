@@ -4,3 +4,15 @@
     box-sizing: border-box;
     overflow: hidden;
 }
+
+body{
+    background: linear-gradient(135deg, #ffd2c1, #f9d0d3);
+    height: 100vh;
+    margin: 0;
+}
+
+.canvasModel{
+    position: absolute;
+    width: 100%;
+    height: 98vh;
+}
